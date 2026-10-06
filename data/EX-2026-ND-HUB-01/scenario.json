@@ -1,0 +1,207 @@
+{
+  "scenario": {
+    "alternatives": [
+      {
+        "backup": "F-GEN",
+        "label": "柴油发电替代市电",
+        "primary": "F-SUB",
+        "transparent": true,
+        "valid_from": "2026-09-30T00:00:00Z",
+        "valid_to": "2026-10-01T00:00:00Z"
+      },
+      {
+        "backup": "F-FIBER-B",
+        "label": "切至应急运营商微波",
+        "primary": "F-FIBER-A",
+        "transparent": false,
+        "valid_from": "2026-09-30T00:00:00Z",
+        "valid_to": "2026-10-01T00:00:00Z"
+      },
+      {
+        "backup": "F-BS-B",
+        "label": "应急基站承接话务与广播",
+        "primary": "F-BS-A",
+        "transparent": false,
+        "valid_from": "2026-09-30T00:00:00Z",
+        "valid_to": "2026-10-01T00:00:00Z"
+      },
+      {
+        "backup": "F-COMPUTE-BACKUP",
+        "label": "调度任务迁移上云",
+        "primary": "F-COMPUTE",
+        "transparent": false,
+        "valid_from": "2026-09-30T00:00:00Z",
+        "valid_to": "2026-10-01T00:00:00Z"
+      }
+    ],
+    "coordinator": "HQ",
+    "dependencies": [
+      {
+        "downstream": "F-BS-A",
+        "label": "供电",
+        "required": true,
+        "upstream": "F-SUB"
+      },
+      {
+        "downstream": "F-BS-A",
+        "label": "回传链路",
+        "required": true,
+        "upstream": "F-FIBER-A"
+      },
+      {
+        "downstream": "F-COMPUTE",
+        "label": "双路供电之一",
+        "required": true,
+        "upstream": "F-SUB"
+      },
+      {
+        "downstream": "F-COMPUTE",
+        "label": "调度网接入",
+        "required": true,
+        "upstream": "F-BS-A"
+      },
+      {
+        "downstream": "F-BS-B",
+        "label": "回传链路",
+        "required": true,
+        "upstream": "F-FIBER-B"
+      }
+    ],
+    "exercise_code": "EX-2026-ND-HUB-01",
+    "facilities": [
+      {
+        "critical": true,
+        "facility_id": "F-SUB",
+        "kind": "power",
+        "name": "枢纽35kV变电站",
+        "owner_unit": "POWER"
+      },
+      {
+        "critical": false,
+        "facility_id": "F-GEN",
+        "kind": "generator",
+        "name": "应急柴油发电机",
+        "owner_unit": "POWER"
+      },
+      {
+        "critical": true,
+        "facility_id": "F-FIBER-A",
+        "kind": "link",
+        "name": "主用光缆环网",
+        "owner_unit": "TELCO-A"
+      },
+      {
+        "critical": false,
+        "facility_id": "F-FIBER-B",
+        "kind": "link",
+        "name": "备用微波链路",
+        "owner_unit": "TELCO-B"
+      },
+      {
+        "critical": true,
+        "facility_id": "F-BS-A",
+        "kind": "basestation",
+        "name": "枢纽基站集群A",
+        "owner_unit": "TELCO-A"
+      },
+      {
+        "critical": false,
+        "facility_id": "F-BS-B",
+        "kind": "basestation",
+        "name": "应急通信基站B",
+        "owner_unit": "TELCO-B"
+      },
+      {
+        "critical": true,
+        "facility_id": "F-COMPUTE",
+        "kind": "compute",
+        "name": "枢纽调度算力节点",
+        "owner_unit": "COMPUTE"
+      },
+      {
+        "critical": false,
+        "facility_id": "F-COMPUTE-BACKUP",
+        "kind": "compute",
+        "name": "云端备用算力集群",
+        "owner_unit": "COMPUTE"
+      }
+    ],
+    "frozen_at": "2026-09-25T08:00:00Z",
+    "scenario_revision": "2026-09-25-frozen-r1",
+    "services": [
+      {
+        "depends_on": [
+          "F-BS-A"
+        ],
+        "name": "旅客通信与到离港广播",
+        "owner_unit": "TELCO-A",
+        "rto_seconds": 240,
+        "service_id": "S-COMMS"
+      },
+      {
+        "depends_on": [
+          "F-COMPUTE"
+        ],
+        "name": "物资调度算力服务",
+        "owner_unit": "COMPUTE",
+        "rto_seconds": 600,
+        "service_id": "S-COMPUTE"
+      },
+      {
+        "depends_on": [
+          "F-COMPUTE",
+          "F-BS-A"
+        ],
+        "name": "联合现场调度指挥",
+        "owner_unit": "HUB",
+        "rto_seconds": 900,
+        "service_id": "S-DISPATCH"
+      }
+    ],
+    "units": [
+      {
+        "name": "联合指挥部",
+        "responsibilities": [
+          "统一会商、结论裁定"
+        ],
+        "unit_id": "HQ"
+      },
+      {
+        "name": "供电公司",
+        "responsibilities": [
+          "枢纽供电与应急发电"
+        ],
+        "unit_id": "POWER"
+      },
+      {
+        "name": "主用运营商",
+        "responsibilities": [
+          "主用光缆与基站集群"
+        ],
+        "unit_id": "TELCO-A"
+      },
+      {
+        "name": "应急运营商",
+        "responsibilities": [
+          "备用链路与应急基站"
+        ],
+        "unit_id": "TELCO-B"
+      },
+      {
+        "name": "算力中心",
+        "responsibilities": [
+          "调度算力与任务迁移"
+        ],
+        "unit_id": "COMPUTE"
+      },
+      {
+        "name": "物流枢纽",
+        "responsibilities": [
+          "现场调度、旅客与物资保障"
+        ],
+        "unit_id": "HUB"
+      }
+    ]
+  },
+  "scenario_fingerprint": "0df1405a28bed8ad57ce8144aa07504514d7bc27aa53a505c73be3b39a0a8870"
+}
